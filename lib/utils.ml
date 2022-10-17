@@ -45,3 +45,12 @@ module Tup = struct
     | [] -> []
     | h :: q -> (h / divider, h mod divider) :: remainders divider q
 end
+
+module Opt = struct
+  let mean l =
+    let rec sum acc len = function
+      | [] -> acc / len
+      | h :: q -> sum (acc + h) (len + 1) q
+    in
+    match l with [] -> None | l -> Some (sum 0 0 l)
+end
