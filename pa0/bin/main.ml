@@ -8,7 +8,7 @@ let compile (program : int) : string =
      section .text\n\
      global our_code_starts_here\n\
      our_code_starts_here:\n\
-    \  mov eax, %d\n\
+    \  mov rax, %d\n\
     \  ret\n"
     program
 
