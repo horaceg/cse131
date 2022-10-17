@@ -61,6 +61,22 @@ module Tup = struct
          [ (1, 1); (2, 0); (3, 2) ]
 end
 
+module Opt = struct
+  open Cse131.Utils.Opt
+
+  let check_mean () =
+    mean [ 1; 2; 3 ] |> Alcotest.(check @@ option int) "mean" @@ Some 2
+
+  let check_mean_empty () =
+    mean [] |> Alcotest.(check @@ option int) "mean empty" None
+
+  let check_list_max () =
+    list_max [ 1; 2; 3 ] |> Alcotest.(check @@ option int) "list max" @@ Some 3
+
+  let check_list_max_empty () =
+    list_max [] |> Alcotest.(check @@ option int) "list max empty" @@ None
+end
+
 let () =
   let open Alcotest in
   run "Utils"
@@ -86,5 +102,12 @@ let () =
         [
           test_case "sum squares" `Quick Tup.check_sum_squares;
           test_case "remainders" `Quick Tup.check_remainders;
+        ] );
+      ( "Option",
+        [
+          test_case "mean" `Quick Opt.check_mean;
+          test_case "mean empty" `Quick Opt.check_mean_empty;
+          test_case "list max" `Quick Opt.check_list_max;
+          test_case "list max empty" `Quick Opt.check_list_max_empty;
         ] );
     ]

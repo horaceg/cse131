@@ -48,9 +48,15 @@ end
 
 module Opt = struct
   let mean l =
-    let rec sum acc len = function
+    let rec aux acc len = function
       | [] -> acc / len
-      | h :: q -> sum (acc + h) (len + 1) q
+      | h :: q -> aux (acc + h) (len + 1) q
     in
-    match l with [] -> None | l -> Some (sum 0 0 l)
+    match l with [] -> None | l -> Some (aux 0 0 l)
+
+  let list_max l =
+    let rec aux ll =
+      match ll with [] -> Int.min_int | h :: q -> max h @@ aux q
+    in
+    match l with [] -> None | _ -> Some (aux l)
 end
