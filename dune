@@ -1,0 +1,10 @@
+; (rule
+;  (alias full)
+;  (deps
+;   (:mainc ./main.c)
+;   (:inputs ./inputs))
+;  (targets (./ourbuild/{%in}.run))
+;  (action
+;   (run dune exec cse131 -- inputs/{%in}.int > ourbuild/{%in}.s)
+;    (run nasm -f elf64 -o ourbuild/{%in}.o ourbuild/{%in}.s)
+;    (run clang -o ourbuild/{%in}.run %{mainc} ourbuild/{%in}.o)))
