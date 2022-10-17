@@ -1,5 +1,5 @@
 module Btree = struct
-  open Cse131.Btree
+  open Cse131.Utils.Btree
 
   let check_leaf () = inorder_str @@ Leaf |> Alcotest.(check string) "leaf" ""
 
@@ -28,7 +28,7 @@ module Btree = struct
 end
 
 module Llist = struct
-  open Cse131.Llist
+  open Cse131.Utils.Llist
 
   let check_increment_all () =
     increment_all [ 1; 2; 3 ]
@@ -37,6 +37,28 @@ module Llist = struct
   let check_long_strings () =
     long_strings 2 [ "aa"; "aaa"; "a" ]
     |> Alcotest.(check @@ list string) "long strings" [ "aaa" ]
+
+  let check_every_other () =
+    every_other [ 1; 2; 3; 4 ]
+    |> Alcotest.(check @@ list int) "every other" [ 1; 3 ]
+
+  let check_sum_all () =
+    sum_all [ [ 1; 2 ]; [ 3; 4 ] ]
+    |> Alcotest.(check @@ list int) "sum all" [ 3; 7 ]
+end
+
+module Tup = struct
+  open Cse131.Utils.Tup
+
+  let check_sum_squares () =
+    sum_of_squares [ (1, 1); (2, 3) ]
+    |> Alcotest.(check int) "sum of squares" 15
+
+  let check_remainders () =
+    remainders 3 [ 4; 6; 11 ]
+    |> Alcotest.(check @@ list @@ pair int int)
+         "remainders"
+         [ (1, 1); (2, 0); (3, 2) ]
 end
 
 let () =
@@ -57,5 +79,12 @@ let () =
         [
           test_case "increment all" `Quick Llist.check_increment_all;
           test_case "long strings" `Quick Llist.check_long_strings;
+          test_case "every other" `Quick Llist.check_every_other;
+          test_case "sum all" `Quick Llist.check_sum_all;
+        ] );
+      ( "tuples",
+        [
+          test_case "sum squares" `Quick Tup.check_sum_squares;
+          test_case "remainders" `Quick Tup.check_remainders;
         ] );
     ]
