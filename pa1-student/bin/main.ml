@@ -1,5 +1,5 @@
-open Compile
-open Runner
+open Pa1.Compile
+open Pa1.Runner
 open Printf
 open Lexing
 

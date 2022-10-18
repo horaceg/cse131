@@ -1,0 +1,9 @@
+(executable
+ (public_name pa1)
+ (name main)
+ (libraries pa1))
+
+(env
+ (dev
+  (flags
+   (:standard -w -66-33-27-39-26))))

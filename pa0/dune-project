@@ -1,0 +1,19 @@
+(lang dune 3.4)
+
+(name cse131)
+
+(generate_opam_files true)
+
+(package
+ (name cse131)
+ (depends
+  ocaml
+  dune
+  alcotest
+  ocaml-lsp-server
+  odig
+  ocamlformat
+  ocamlformat-rpc
+  ounit))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

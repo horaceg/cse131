@@ -1,0 +1,22 @@
+(lang dune 3.4)
+
+(name pa1)
+
+(generate_opam_files true)
+
+(package
+ (name pa1)
+ (depends
+  ocaml
+  dune
+  alcotest
+  ocaml-lsp-server
+  odig
+  ocamlformat
+  ocamlformat-rpc
+  ounit2
+  sexplib
+  extlib
+  unix))
+
+; See the complete stanza docs at https://dune.readthedocs.io/en/stable/dune-files.html#dune-project

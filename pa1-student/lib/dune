@@ -1,0 +1,8 @@
+(library
+ (name pa1)
+ (libraries sexplib ounit2 extlib))
+
+(env
+ (dev
+  (flags
+   (:standard -w -66-33-27-39-26))))
