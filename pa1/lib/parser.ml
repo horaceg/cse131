@@ -1,4 +1,4 @@
-open Sexplib.Sexp
+module Sexp = Sexplib.Sexp
 open Expr
 
 (* Defines rules for what ids are valid -- ids must match the regex and not
