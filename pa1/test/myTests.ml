@@ -23,25 +23,17 @@ open OUnit2
  *)
 
 let f_to_s fname = Runner.string_of_file ("input/" ^ fname)
-
-let t name program expected = name>::test_run program name expected;;
-let t_file name program expected = (t name (f_to_s program) expected);;
+let t name program expected = name >:: test_run program name expected
+let t_file name program expected = t name (f_to_s program) expected
 
 let t_parse name program expected =
-  name>::(fun _ -> assert_equal expected (Runner.parse_string program));;
+  name >:: fun _ -> assert_equal expected (Runner.parse_string program)
 
 (* For folding *)
-let t_f test_type (name,program,expected) =
-  test_type name program expected
-
-let t_err name program expected =
-  name>::test_err program name expected
+let t_f test_type (name, program, expected) = test_type name program expected
+let t_err name program expected = name >:: test_err program name expected
 
 let t_parse_err name program expected =
-  name>::test_parse_err program name expected
+  name >:: test_parse_err program name expected
 
-
-let myTestList =
-  [ (* Fill in your tests here: *)
-  ]
-;;
+let myTestList = [ (* Fill in your tests here: *) ]

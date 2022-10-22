@@ -1,11 +1,5 @@
-type prim1 =
-  | Add1
-  | Sub1
-
-type prim2 =
-  | Plus
-  | Minus
-  | Times
+type prim1 = Add1 | Sub1
+type prim2 = Plus | Minus | Times
 
 type expr =
   | ELet of (string * expr) list * expr
