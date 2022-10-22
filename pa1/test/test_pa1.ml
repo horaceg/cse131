@@ -24,6 +24,7 @@ let def_x = "(let ((x 5)) x)"
 let def_x2 = "(let ((x 5)) (sub1 x))"
 let def_x3 = "(let ((x 5)) (let ((x 67)) (sub1 x)))"
 let def_x4 = "(let ((x (let ((x 5)) (sub1 x)))) (sub1 x))"
+let def_xy = "(let ((x 5) (y 6)) (+ x y))"
 let addnums = "(+ 5 10)"
 let nested_add = "(+ 5 (+ 10 20))"
 let nested_add2 = "(+ (- 10 5) 20)"
@@ -39,23 +40,35 @@ let testFailList =
     t_err "failID" failID "Compile error: Unbound variable identifier x";
   ]
 
-let suite =
-  "suite"
-  >::: [ t_parse "forty_one parse" forty_one forty_one_p ]
-       @ [
-           t "forty_one" forty_one "41";
-           t "forty" forty "40";
-           t "add1" add1 "6";
-           t "def_x" def_x "5";
-           t "def_x2" def_x2 "4";
-           t "def_x3" def_x3 "66";
-           t "def_x4" def_x4 "3";
-           t "addnums" addnums "15";
-           t "nested_add" nested_add "35";
-           t "nested_add2" nested_add2 "25";
-           t "nested_arith" nested_arith "0";
-           t "let_nested" let_nested "1225";
-         ]
-       @ testFailList @ MyTests.myTestList
+let parse_suite =
+  [
+    t_parse "forty_one parse" forty_one forty_one_p;
+    t_parse "x2 parse" def_x2 (ELet ([ ("x", ENumber 5) ], EPrim1 (Sub1, EId "x")));
+    t_parse "x4 parse" def_x4
+      (ELet
+         ( [ ("x", ELet ([ ("x", ENumber 5) ], EPrim1 (Sub1, EId "x"))) ],
+           EPrim1 (Sub1, EId "x") ));
+    t_parse "xy parse" def_xy
+      (ELet
+         ( [ ("x", ENumber 5); ("y", ENumber 6) ],
+           EPrim2 (Plus, EId "x", EId "y") ));
+  ]
+
+let suite = "suite" >::: parse_suite
+(* @ [
+       t "forty_one" forty_one "41";
+       t "forty" forty "40";
+       t "add1" add1 "6";
+       t "def_x" def_x "5";
+       t "def_x2" def_x2 "4";
+       t "def_x3" def_x3 "66";
+       t "def_x4" def_x4 "3";
+       t "addnums" addnums "15";
+       t "nested_add" nested_add "35";
+       t "nested_add2" nested_add2 "25";
+       t "nested_arith" nested_arith "0";
+       t "let_nested" let_nested "1225";
+     ]
+   @ testFailList @ MyTests.myTestList *)
 
 let () = run_test_tt_main suite
