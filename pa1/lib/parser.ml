@@ -35,3 +35,27 @@ and parse_bindings bindings =
       | _ -> failwith "parser error")
       @ parse_bindings q
   | _ -> failwith "parser error: Expected Sexp list after let binding"
+
+let prim1_to_string prim = match prim with Add1 -> "add1" | Sub1 -> "sub1"
+
+let prim2_to_string prim =
+  match prim with Plus -> "+" | Minus -> "-" | Times -> "*"
+
+let rec to_sexp expr =
+  match expr with
+  | EId s -> Sexp.Atom s
+  | ENumber n -> Sexp.Atom (string_of_int n)
+  | EPrim1 (prim1, e) ->
+      Sexp.List [ Sexp.Atom (prim1_to_string prim1); to_sexp e ]
+  | EPrim2 (prim2, e1, e2) ->
+      Sexp.List [ Sexp.Atom (prim2_to_string prim2); to_sexp e1; to_sexp e2 ]
+  | ELet (l, e) ->
+      Sexp.List
+        [
+          Sexp.Atom "let";
+          Sexp.List
+            (List.map (fun (s, e) -> Sexp.List [ Sexp.Atom s; to_sexp e ]) l);
+          to_sexp e;
+        ]
+
+let pp ppf expr = Sexp.pp ppf @@ to_sexp expr
