@@ -129,4 +129,6 @@ let parse_suite =
     parse_case let_empty let_empty_expr let_empty;
   ]
 
+let letlet = "(let (let 5) let)"
+
 let () = Alcotest.run "Parsing" [ ("parse", parse_suite) ]

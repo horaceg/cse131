@@ -8,6 +8,10 @@ let reserved_words = [ "let"; "add1"; "sub1" ]
 (* Converts a string to Some int or None if not convertable *)
 let int_of_string_opt s = try Some (int_of_string s) with _ -> None
 
+let maybe_id identifier =
+  if List.mem identifier reserved_words then failwith "Reserved keyword"
+  else identifier
+
 let rec parse sexp =
   let aux sxps =
     match sxps with
@@ -18,7 +22,7 @@ let rec parse sexp =
     | [ Sexp.Atom "*"; arg1; arg2 ] -> EPrim2 (Times, parse arg1, parse arg2)
     | Sexp.Atom "let" :: Sexp.List bindings :: [ e2 ] ->
         ELet (parse_bindings bindings, parse e2)
-    | _ -> failwith "parser error: Unrecognized instruction and/or structure"
+    | _ -> failwith "parser error: Invalid s-expression"
   in
   match sexp with
   | Sexp.Atom s -> (
@@ -30,7 +34,7 @@ and parse_bindings bindings =
   | [] -> []
   | Sexp.List bd :: q -> (
       match bd with
-      | [ Sexp.Atom a; b ] -> (a, parse b) :: parse_bindings q
+      | [ Sexp.Atom a; b ] -> (maybe_id a, parse b) :: parse_bindings q
       | _ -> failwith "parser error: let binding failed")
   | _ -> failwith "parser error: Expected Sexp list after let binding"
 
