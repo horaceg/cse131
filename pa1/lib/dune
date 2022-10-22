@@ -1,6 +1,6 @@
 (library
  (name pa1)
- (libraries sexplib ounit2 extlib))
+ (libraries sexplib extlib alcotest))
 
 (env
  (dev

@@ -1,6 +1,6 @@
 (test
  (name test_pa1)
- (libraries alcotest pa1 ounit2))
+ (libraries alcotest pa1))
 
 (env
  (dev

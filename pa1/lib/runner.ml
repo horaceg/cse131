@@ -3,7 +3,6 @@ open Filename
 open Str
 open Compile
 open Printf
-open OUnit2
 open ExtLib
 
 type ('a, 'b) either = Left of 'a | Right of 'b
@@ -107,22 +106,29 @@ let run p out =
         [ bstdout_name; bstderr_name; rstdout_name; rstderr_name ];
       result
 
+let either_pp ppf e = either_printer e |> print_string
+
 let test_run program_str outfile expected _ =
   let full_outfile = "output/" ^ outfile in
   let program = parse_string program_str in
   let result = run program full_outfile in
-  assert_equal (Right (expected ^ "\n")) result ~printer:either_printer
+  Alcotest.(check @@ testable either_pp ( = ))
+    program_str
+    (Right (expected ^ "\n"))
+    result
+
+let compare_programs check result =
+  match (check, result) with
+  | Left expect_msg, Left actual_message ->
+      String.exists actual_message expect_msg
+  | _ -> false
 
 let test_err program_str outfile errmsg _ =
   let full_outfile = "output/" ^ outfile in
   let program = parse_string program_str in
   let result = run program full_outfile in
-  assert_equal (Left errmsg) result ~printer:either_printer
-    ~cmp:(fun check result ->
-      match (check, result) with
-      | Left expect_msg, Left actual_message ->
-          String.exists actual_message expect_msg
-      | _ -> false)
+  Alcotest.(check @@ testable either_pp compare_programs)
+    program_str (Left errmsg) result
 
 let try_parse program_str =
   try Right (parse_string program_str)
@@ -131,12 +137,10 @@ let try_parse program_str =
 let either_parse_printer e =
   match e with Left s -> "Error: " ^ s ^ "\n" | Right _ -> "AST\n"
 
+let either_parse_pp ppf e = either_parse_printer e |> print_string
+
 let test_parse_err program_str outfile errmsg _ =
   let full_outfile = "output/" ^ outfile in
   let result = try_parse program_str in
-  assert_equal (Left errmsg) result ~printer:either_parse_printer
-    ~cmp:(fun check result ->
-      match (check, result) with
-      | Left expect_msg, Left actual_message ->
-          String.exists actual_message expect_msg
-      | _ -> false)
+  Alcotest.(check @@ testable either_parse_pp compare_programs)
+    program_str (Left errmsg) result

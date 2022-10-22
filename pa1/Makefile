@@ -1,5 +1,5 @@
 output/%.run: output/%.o
-	clang -g -o $@ bin/main.c $<
+	clang -g -fsanitize=address -o $@ bin/main.c $<
 
 output/%.o: output/%.s
 	nasm -f elf64 -o $@ $<

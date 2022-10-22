@@ -2,20 +2,28 @@ open Pa1
 open Pa1.Runner
 open Pa1.Expr
 open Printf
-open OUnit2
 module Sexp = Sexplib.Sexp
 
-let t name program expected = name >:: test_run program name expected
+let expr_testable = Alcotest.testable Parser.pp ( = )
+let parse_string s = Parser.parse @@ Sexp.of_string s
 
-let t_parse name program expected =
-  name >:: fun _ -> assert_equal expected (Runner.parse_string program)
+let parse_one name expected inputs () =
+  Alcotest.check expr_testable name expected @@ parse_string inputs
+
+let parse_case name expected inputs =
+  Alcotest.test_case name `Quick @@ parse_one name expected inputs
+
+let t name program expected =
+  Alcotest.test_case name `Slow @@ test_run program name expected
 
 (* For folding *)
 let t_f test_type (name, program, expected) = test_type name program expected
-let t_err name program expected = name >:: test_err program name expected
+
+let t_err name program expected =
+  Alcotest.test_case name `Slow @@ test_err program name expected
 
 let t_parse_err name program expected =
-  name >:: test_parse_err program name expected
+  Alcotest.test_case name `Slow @@ test_parse_err program name expected
 
 let f_to_s fname = Runner.string_of_file ("input/" ^ fname)
 let forty_one = "(sub1 42)"
@@ -84,32 +92,22 @@ let testFailList =
     t_err "failID" failID "Compile error: Unbound variable identifier x";
   ]
 
-(* let suite =
-   "suite"
-   >::: [
-          t "forty_one" forty_one "41";
-          t "forty" forty "40";
-          t "add1" add1 "6";
-          t "def_x" def_x "5";
-          t "def_x2" def_x2 "4";
-          t "def_x3" def_x3 "66";
-          t "def_x4" def_x4 "3";
-          t "addnums" addnums "15";
-          t "nested_add" nested_add "35";
-          t "nested_add2" nested_add2 "25";
-          t "nested_arith" nested_arith "0";
-          t "let_nested" let_nested "1225";
-        ]
-        @ testFailList @ MyTests.myTestList
-*)
-let expr_testable = Alcotest.testable Parser.pp ( = )
-let parse_string s = Parser.parse @@ Sexp.of_string s
-
-let parse_one name expected inputs () =
-  Alcotest.check expr_testable name expected @@ parse_string inputs
-
-let parse_case name expected inputs =
-  Alcotest.test_case name `Quick @@ parse_one name expected inputs
+let suite =
+  [
+    t "forty_one" forty_one "41";
+    t "forty" forty "40";
+    t "add1" add1 "6";
+    t "def_x" def_x "5";
+    t "def_x2" def_x2 "4";
+    t "def_x3" def_x3 "66";
+    t "def_x4" def_x4 "3";
+    t "addnums" addnums "15";
+    t "nested_add" nested_add "35";
+    t "nested_add2" nested_add2 "25";
+    t "nested_arith" nested_arith "0";
+    t "let_nested" let_nested "1225";
+  ]
+  @ testFailList @ MyTests.myTestList
 
 let parse_suite =
   [
@@ -130,5 +128,4 @@ let parse_suite =
   ]
 
 let letlet = "(let (let 5) let)"
-
-let () = Alcotest.run "Parsing" [ ("parse", parse_suite) ]
+let () = Alcotest.run "Parsing" [ ("parse", parse_suite); ("compile", suite) ]
