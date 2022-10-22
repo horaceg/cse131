@@ -18,7 +18,7 @@ let rec parse sexp =
     | [ Sexp.Atom "*"; arg1; arg2 ] -> EPrim2 (Times, parse arg1, parse arg2)
     | Sexp.Atom "let" :: Sexp.List bindings :: [ e2 ] ->
         ELet (parse_bindings bindings, parse e2)
-    | _ -> failwith "parser error: Unrecognized instruction"
+    | _ -> failwith "parser error: Unrecognized instruction and/or structure"
   in
   match sexp with
   | Sexp.Atom s -> (
@@ -28,12 +28,10 @@ let rec parse sexp =
 and parse_bindings bindings =
   match bindings with
   | [] -> []
-  | Sexp.List bd :: q ->
-      (match bd with
-      | [] -> []
-      | Sexp.Atom a :: b :: rest -> (a, parse b) :: parse_bindings rest
-      | _ -> failwith "parser error")
-      @ parse_bindings q
+  | Sexp.List bd :: q -> (
+      match bd with
+      | [ Sexp.Atom a; b ] -> (a, parse b) :: parse_bindings q
+      | _ -> failwith "parser error: let binding failed")
   | _ -> failwith "parser error: Expected Sexp list after let binding"
 
 let prim1_to_string prim = match prim with Add1 -> "add1" | Sub1 -> "sub1"

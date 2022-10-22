@@ -73,6 +73,8 @@ let let_nested_expr =
     ( [ ("x", EPrim2 (Plus, ENumber 5, EPrim2 (Plus, ENumber 10, ENumber 20))) ],
       EPrim2 (Times, EId "x", EId "x") )
 
+let let_empty = "(let () 5)"
+let let_empty_expr = ELet ([], ENumber 5)
 let failLet = "(let ((x  1) (y 1) (x 10)) x)"
 let failID = "x"
 
@@ -124,6 +126,7 @@ let parse_suite =
     parse_case nested_add2 nested_add2_expr nested_add2;
     parse_case nested_arith nested_arith_expr nested_arith;
     parse_case let_nested let_nested_expr let_nested;
+    parse_case let_empty let_empty_expr let_empty;
   ]
 
 let () = Alcotest.run "Parsing" [ ("parse", parse_suite) ]
