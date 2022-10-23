@@ -16,7 +16,7 @@ let rec compile_expr (e : expr) (si : int) (env : (string * int) list) :
   | ENumber n -> [ IMov (Reg RAX, Const n) ]
   | EId x -> (
       match find env x with
-      | None -> failwith "Unbound ID"
+      | None -> failwith @@ sprintf "Unbound ID: %s" x
       | Some si -> [ IMov (Reg RAX, stackloc si) ])
   | EPrim1 (op, e) -> compile_prim1 op e si env
   | EPrim2 (op, e1, e2) -> compile_prim2 op e1 e2 si env
@@ -32,8 +32,19 @@ and compile_prim1 op e si env =
   arg_exprs @ [ new_instr ]
 
 and compile_prim2 op e1 e2 si env =
-  (* TODO *)
-  failwith "Not yet implemented"
+  let arg_exprs_1 = compile_expr e1 si env in
+  let arg_exprs_2 = compile_expr e2 (si + 1) env in
+  let context = arg_exprs_1 @ [ IMov (stackloc si, Reg RAX) ] @ arg_exprs_2 in
+  let prelude =
+    [ IMov (stackloc (si + 1), Reg RAX); IMov (Reg RAX, stackloc si) ]
+  in
+  let core_instr =
+    match op with
+    | Plus -> IAdd (Reg RAX, stackloc (si + 1))
+    | Minus -> ISub (Reg RAX, stackloc (si + 1))
+    | Times -> IMul (Reg RAX, stackloc (si + 1))
+  in
+  context @ prelude @ [ core_instr ]
 
 let compile_to_string prog =
   let prelude =

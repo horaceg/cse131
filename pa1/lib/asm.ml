@@ -1,6 +1,6 @@
 open Printf
 
-type reg = RAX | RSP
+type reg = RAX | RSP | RBX
 type arg = Const of int | Reg of reg | RegOffset of int * reg
 
 type instruction =
@@ -20,15 +20,17 @@ let gen_temp base =
   count := !count + 1;
   sprintf "temp_%s_%d" base !count
 
-let r_to_asm (r : reg) : string = match r with RAX -> "rax" | RSP -> "rsp"
+let r_to_asm (r : reg) : string =
+  match r with RAX -> "rax" | RSP -> "rsp" | RBX -> "rbx"
 
 let arg_to_asm (a : arg) : string =
   match a with
   | Const n -> sprintf "%d" n
   | Reg r -> r_to_asm r
-  | RegOffset (n, r) ->
-      let reg = match r with RAX -> "rax" | RSP -> "rsp" in
-      sprintf "[%s - %d]" reg n
+  | RegOffset (n, r) when n < 0 ->
+      let reg = r_to_asm r in
+      sprintf "[%s - %d]" reg (-n)
+  | RegOffset (_, _) -> failwith "negative offsets onlu"
 
 let i_to_asm (i : instruction) : string =
   match i with
@@ -39,7 +41,7 @@ let i_to_asm (i : instruction) : string =
   | ISub (dest, to_sub) ->
       sprintf "  sub %s, %s" (arg_to_asm dest) (arg_to_asm to_sub)
   | IMul (dest, to_mul) ->
-      sprintf "  mul %s, %s" (arg_to_asm dest) (arg_to_asm to_mul)
+      sprintf "  imul %s, %s" (arg_to_asm dest) (arg_to_asm to_mul)
   | ICmp (left, right) ->
       (* TODO *)
       failwith "Not yet implemented"

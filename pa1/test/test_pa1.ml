@@ -97,14 +97,15 @@ let suite =
     t "forty_one" forty_one "41";
     t "forty" forty "40";
     t "add1" add1 "6";
+    t "addnums" addnums "15";
+    t "nested_add" nested_add "35";
+    t "nested_add2" nested_add2 "25";
+    t "mul" "(* 5 2)" "10";
+    t "nested_arith" nested_arith "0";
     t "def_x" def_x "5";
     t "def_x2" def_x2 "4";
     t "def_x3" def_x3 "66";
     t "def_x4" def_x4 "3";
-    t "addnums" addnums "15";
-    t "nested_add" nested_add "35";
-    t "nested_add2" nested_add2 "25";
-    t "nested_arith" nested_arith "0";
     t "let_nested" let_nested "1225";
   ]
   @ testFailList

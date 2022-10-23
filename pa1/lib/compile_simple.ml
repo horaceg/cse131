@@ -50,11 +50,11 @@ let rec find (env : tenv) (x : string) : int option =
 
 let rec e_to_is (e : expr) (si : int) (env : tenv) =
   match e with
-  | EPlus (e1, e2) ->
+  (* | EPlus (e1, e2) ->
       let e1is = e_to_is e1 si env in
       let e2is = e_to_is e2 si env in
       e1is @ [ "mov ebx, rax" ] @ e2is @ [ "add rax, ebx" ]
-      (* | EPlus(e1, e2) ->
+      | EPlus(e1, e2) ->
              let e1is = e_to_is e1 si env in
              let e2is = e_to_is e2 si env in
              e1is @
@@ -62,15 +62,18 @@ let rec e_to_is (e : expr) (si : int) (env : tenv) =
              e2is @
              [sprintf "add %s, rax" (stackval si);
              sprintf "mov rax, %s" (stackval si)]
-         | EPlus(e1, e2) ->
-             let e1is = e_to_is e1 si env in
-             let e2is = e_to_is e2 (si + 1) env in
-             e1is @
-             [sprintf "mov %s, rax" (stackval si)] @
-             e2is @
-             [sprintf "mov %s, rax" (stackval (si + 1));
-             sprintf "mov rax, %s" (stackval si);
-             sprintf "add rax, %s" (stackval (si + 1))] *)
+  *)
+  | EPlus (e1, e2) ->
+      let e1is = e_to_is e1 si env in
+      let e2is = e_to_is e2 (si + 1) env in
+      e1is
+      @ [ sprintf "mov %s, rax" (stackval si) ]
+      @ e2is
+      @ [
+          sprintf "mov %s, rax" (stackval (si + 1));
+          sprintf "mov rax, %s" (stackval si);
+          sprintf "add rax, %s" (stackval (si + 1));
+        ]
   | EId x -> (
       match find env x with
       | None -> failwith "Unbound id"
