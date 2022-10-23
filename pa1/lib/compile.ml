@@ -34,9 +34,11 @@ and compile_prim1 op e si env =
 and compile_prim2 op e1 e2 si env =
   let arg_exprs_1 = compile_expr e1 si env in
   let arg_exprs_2 = compile_expr e2 (si + 1) env in
-  let context = arg_exprs_1 @ [ IMov (stackloc si, Reg RAX) ] @ arg_exprs_2 in
-  let prelude =
-    [ IMov (stackloc (si + 1), Reg RAX); IMov (Reg RAX, stackloc si) ]
+  let context =
+    arg_exprs_1
+    @ [ IMov (stackloc si, Reg RAX) ]
+    @ arg_exprs_2
+    @ [ IMov (stackloc (si + 1), Reg RAX); IMov (Reg RAX, stackloc si) ]
   in
   let core_instr =
     match op with
@@ -44,7 +46,7 @@ and compile_prim2 op e1 e2 si env =
     | Minus -> ISub (Reg RAX, stackloc (si + 1))
     | Times -> IMul (Reg RAX, stackloc (si + 1))
   in
-  context @ prelude @ [ core_instr ]
+  context @ [ core_instr ]
 
 let compile_to_string prog =
   let prelude =
