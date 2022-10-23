@@ -13,7 +13,7 @@ let maybe_id identifier =
   else identifier
 
 let rec parse sexp =
-  let aux sxps =
+  let parse_multiple sxps =
     match sxps with
     | Sexp.Atom "add1" :: [ arg ] -> EPrim1 (Add1, parse arg)
     | Sexp.Atom "sub1" :: [ arg ] -> EPrim1 (Sub1, parse arg)
@@ -27,7 +27,7 @@ let rec parse sexp =
   match sexp with
   | Sexp.Atom s -> (
       match int_of_string_opt s with None -> EId s | Some i -> ENumber i)
-  | List sexps -> aux sexps
+  | List sexps -> parse_multiple sexps
 
 and parse_bindings bindings =
   match bindings with

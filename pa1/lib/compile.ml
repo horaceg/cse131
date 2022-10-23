@@ -40,11 +40,12 @@ and compile_prim2 op e1 e2 si env =
     @ arg_exprs_2
     @ [ IMov (stackloc (si + 1), Reg RAX); IMov (Reg RAX, stackloc si) ]
   in
+  let reg_offset = stackloc (si + 1) in
   let core_instr =
     match op with
-    | Plus -> IAdd (Reg RAX, stackloc (si + 1))
-    | Minus -> ISub (Reg RAX, stackloc (si + 1))
-    | Times -> IMul (Reg RAX, stackloc (si + 1))
+    | Plus -> IAdd (Reg RAX, reg_offset)
+    | Minus -> ISub (Reg RAX, reg_offset)
+    | Times -> IMul (Reg RAX, reg_offset)
   in
   context @ [ core_instr ]
 
