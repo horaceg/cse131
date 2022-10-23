@@ -12,7 +12,7 @@ let stackloc si = RegOffset (-8 * si, RSP)
 
 let compile_id si env x =
   match find env x with
-  | None -> failwith @@ sprintf "Unbound ID: %s" x
+  | None -> failwith @@ sprintf "Unbound variable identifier %s" x
   | Some si -> [ IMov (Reg RAX, stackloc si) ]
 
 let rec compile_expr si env e =
@@ -24,16 +24,19 @@ let rec compile_expr si env e =
   | ELet (l, e) -> compile_let si env l e
 
 and compile_let si env l post_expr =
-  let rec bind acc env ll =
+  let rec bind acc env addenv ll =
     match ll with
-    | [] -> (env, acc)
+    | [] -> (addenv, acc)
     | (var, e) :: t ->
-        let content = compile_expr si env e in
-        let binding = IMov (stackloc si, Reg RAX) in
-        bind (acc @ content @ [ binding ]) ((var, si) :: env) t
+        if List.mem var (List.map fst addenv) then
+          failwith @@ sprintf "Duplicate binding for %s" var
+        else
+          let content = compile_expr si (addenv @ env) e in
+          let binding = IMov (stackloc si, Reg RAX) in
+          bind (acc @ content @ [ binding ]) env ((var, si) :: addenv) t
   in
-  let newenv, bindings = bind [] env l in
-  bindings @ compile_expr (si + 1) newenv post_expr
+  let addenv, bindings = bind [] env [] l in
+  bindings @ compile_expr (si + 1) (addenv @ env) post_expr
 
 and compile_prim1 si env op e =
   let arg_exprs = compile_expr si env e in
