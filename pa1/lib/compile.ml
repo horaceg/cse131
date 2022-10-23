@@ -10,8 +10,7 @@ let rec find ls x =
 
 let stackloc si = RegOffset (-8 * si, RSP)
 
-let rec compile_expr (e : expr) (si : int) (env : (string * int) list) :
-    instruction list =
+let rec compile_expr e si env =
   match e with
   | ENumber n -> [ IMov (Reg RAX, Const n) ]
   | EId x -> compile_id si env x
