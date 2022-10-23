@@ -19,11 +19,11 @@ let rec compile_expr e si env =
   match e with
   | ENumber n -> [ IMov (Reg RAX, Const n) ]
   | EId x -> compile_id si env x
-  | EPrim1 (op, e) -> compile_prim1 op e si env
-  | EPrim2 (op, e1, e2) -> compile_prim2 op e1 e2 si env
-  | _ -> failwith "not implemented"
+  | EPrim1 (op, e) -> compile_prim1 si env op e
+  | EPrim2 (op, e1, e2) -> compile_prim2 si env op e1 e2
+  | ELet (l, e) -> compile_let si env l e
 
-and compile_prim1 op e si env =
+and compile_prim1 si env op e =
   let arg_exprs = compile_expr e si env in
   let new_instr =
     match op with
@@ -32,7 +32,7 @@ and compile_prim1 op e si env =
   in
   arg_exprs @ [ new_instr ]
 
-and compile_prim2 op e1 e2 si env =
+and compile_prim2 si env op e1 e2 =
   let arg_exprs_1 = compile_expr e1 si env in
   let arg_exprs_2 = compile_expr e2 (si + 1) env in
   let context =
@@ -49,6 +49,9 @@ and compile_prim2 op e1 e2 si env =
     | Times -> IMul (Reg RAX, reg_offset)
   in
   context @ [ core_instr ]
+
+and compile_let si env l e = 
+  failwith "not implemented"
 
 let compile_to_string prog =
   let prelude =
