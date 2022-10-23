@@ -14,13 +14,15 @@ let rec compile_expr (e : expr) (si : int) (env : (string * int) list) :
     instruction list =
   match e with
   | ENumber n -> [ IMov (Reg RAX, Const n) ]
-  | EId x -> (
-      match find env x with
-      | None -> failwith @@ sprintf "Unbound ID: %s" x
-      | Some si -> [ IMov (Reg RAX, stackloc si) ])
+  | EId x -> compile_id si env x
   | EPrim1 (op, e) -> compile_prim1 op e si env
   | EPrim2 (op, e1, e2) -> compile_prim2 op e1 e2 si env
   | _ -> failwith "not implemented"
+
+and compile_id si env x =
+  match find env x with
+  | None -> failwith @@ sprintf "Unbound ID: %s" x
+  | Some si -> [ IMov (Reg RAX, stackloc si) ]
 
 and compile_prim1 op e si env =
   let arg_exprs = compile_expr e si env in
