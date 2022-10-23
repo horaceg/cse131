@@ -23,9 +23,17 @@ let rec compile_expr si env e =
   | EPrim2 (op, e1, e2) -> compile_prim2 si env op e1 e2
   | ELet (l, e) -> compile_let si env l e
 
-and compile_let si env l e =
-  let after = compile_expr (si + 1) env e in
-  failwith ""
+and compile_let si env l post_expr =
+  let rec bind acc env ll =
+    match ll with
+    | [] -> (env, acc)
+    | (var, e) :: t ->
+        let content = compile_expr si env e in
+        let binding = IMov (stackloc si, Reg RAX) in
+        bind (acc @ content @ [ binding ]) ((var, si) :: env) t
+  in
+  let newenv, bindings = bind [] env l in
+  bindings @ compile_expr (si + 1) newenv post_expr
 
 and compile_prim1 si env op e =
   let arg_exprs = compile_expr si env e in
