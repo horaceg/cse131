@@ -15,7 +15,7 @@ let compile_id si env x =
   | None -> failwith @@ sprintf "Unbound ID: %s" x
   | Some si -> [ IMov (Reg RAX, stackloc si) ]
 
-let rec compile_expr e si env =
+let rec compile_expr si env e =
   match e with
   | ENumber n -> [ IMov (Reg RAX, Const n) ]
   | EId x -> compile_id si env x
@@ -23,8 +23,12 @@ let rec compile_expr e si env =
   | EPrim2 (op, e1, e2) -> compile_prim2 si env op e1 e2
   | ELet (l, e) -> compile_let si env l e
 
+and compile_let si env l e =
+  let after = compile_expr (si + 1) env e in
+  failwith ""
+
 and compile_prim1 si env op e =
-  let arg_exprs = compile_expr e si env in
+  let arg_exprs = compile_expr si env e in
   let new_instr =
     match op with
     | Add1 -> IAdd (Reg RAX, Const 1)
@@ -33,8 +37,8 @@ and compile_prim1 si env op e =
   arg_exprs @ [ new_instr ]
 
 and compile_prim2 si env op e1 e2 =
-  let arg_exprs_1 = compile_expr e1 si env in
-  let arg_exprs_2 = compile_expr e2 (si + 1) env in
+  let arg_exprs_1 = compile_expr si env e1 in
+  let arg_exprs_2 = compile_expr (si + 1) env e2 in
   let context =
     arg_exprs_1
     @ [ IMov (stackloc si, Reg RAX) ]
@@ -50,14 +54,11 @@ and compile_prim2 si env op e1 e2 =
   in
   context @ [ core_instr ]
 
-and compile_let si env l e = 
-  failwith "not implemented"
-
 let compile_to_string prog =
   let prelude =
     "section .text\n" ^ "global our_code_starts_here\n"
     ^ "our_code_starts_here:"
   in
-  let compiled = compile_expr prog 1 [] in
+  let compiled = compile_expr 1 [] prog in
   let as_assembly_string = to_asm (compiled @ [ IRet ]) in
   sprintf "%s%s\n" prelude as_assembly_string
