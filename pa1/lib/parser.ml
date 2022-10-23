@@ -35,7 +35,7 @@ and parse_bindings bindings =
   | Sexp.List bd :: q -> (
       match bd with
       | [ Sexp.Atom a; b ] -> (maybe_id a, parse b) :: parse_bindings q
-      | _ -> failwith "parser error: let binding failed")
+      | _ -> failwith "parser error: Expected (atom, sexp) in let expression")
   | _ -> failwith "parser error: Expected Sexp list after let binding"
 
 let prim1_to_string prim = match prim with Add1 -> "add1" | Sub1 -> "sub1"
