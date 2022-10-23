@@ -2,16 +2,10 @@ open Printf
 open Expr
 open Asm
 
-let rec find ls x =
-  match ls with
-  | [] -> None
-  | (y, v) :: _ when y = x -> Some v
-  | _ :: rest -> find rest x
-
 let stackloc si = RegOffset (-8 * si, RSP)
 
 let compile_id si env x =
-  match find env x with
+  match List.assoc_opt x env with
   | None -> failwith @@ sprintf "Unbound variable identifier %s" x
   | Some si -> [ IMov (Reg RAX, stackloc si) ]
 
@@ -24,19 +18,19 @@ let rec compile_expr si env e =
   | ELet (l, e) -> compile_let si env l e
 
 and compile_let si env l post_expr =
-  let rec bind acc env addenv ll =
+  let rec bind acc env letenv ll =
     match ll with
-    | [] -> (addenv, acc)
+    | [] -> (letenv, acc)
     | (var, e) :: t ->
-        if List.mem var (List.map fst addenv) then
+        if List.mem var (List.map fst letenv) then
           failwith @@ sprintf "Duplicate binding for %s" var
         else
-          let content = compile_expr si (addenv @ env) e in
+          let content = compile_expr si (letenv @ env) e in
           let binding = IMov (stackloc si, Reg RAX) in
-          bind (acc @ content @ [ binding ]) env ((var, si) :: addenv) t
+          bind (acc @ content @ [ binding ]) env ((var, si) :: letenv) t
   in
-  let addenv, bindings = bind [] env [] l in
-  bindings @ compile_expr (si + 1) (addenv @ env) post_expr
+  let letenv, bindings = bind [] env [] l in
+  bindings @ compile_expr (si + 1) (letenv @ env) post_expr
 
 and compile_prim1 si env op e =
   let arg_exprs = compile_expr si env e in
