@@ -107,7 +107,8 @@ let suite =
     t "nested_arith" nested_arith "0";
     t "let_nested" let_nested "1225";
   ]
-  @ testFailList @ MyTests.myTestList
+  @ testFailList
+(* @ MyTests.myTestList *)
 
 let parse_suite =
   [
