@@ -1,5 +1,6 @@
 compile:
 	dune build
+
 output/%.run: output/%.o
 	clang -g -fsanitize=address -o $@ bin/main.c $<
 
