@@ -106,6 +106,7 @@ let suite =
     t "def_x2" def_x2 "4";
     t "def_x3" def_x3 "66";
     t "def_x4" def_x4 "3";
+    t "def_xy" def_xy "11";
     t "let_nested" let_nested "1225";
   ]
   @ testFailList

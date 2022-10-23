@@ -18,19 +18,19 @@ let rec compile_expr si env e =
   | ELet (l, e) -> compile_let si env l e
 
 and compile_let si env l post_expr =
-  let rec bind acc env letenv ll =
+  let rec bind acc si env letenv ll =
     match ll with
-    | [] -> (letenv, acc)
+    | [] -> (letenv, acc, si)
     | (var, e) :: t ->
         if List.mem var (List.map fst letenv) then
           failwith @@ sprintf "Duplicate binding for %s" var
         else
           let content = compile_expr si (letenv @ env) e in
           let binding = IMov (stackloc si, Reg RAX) in
-          bind (acc @ content @ [ binding ]) env ((var, si) :: letenv) t
+          bind (acc @ content @ [ binding ]) (si + 1) env ((var, si) :: letenv) t
   in
-  let letenv, bindings = bind [] env [] l in
-  bindings @ compile_expr (si + 1) (letenv @ env) post_expr
+  let letenv, bindings, newsi = bind [] si env [] l in
+  bindings @ compile_expr newsi (letenv @ env) post_expr
 
 and compile_prim1 si env op e =
   let arg_exprs = compile_expr si env e in
