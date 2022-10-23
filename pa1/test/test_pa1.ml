@@ -14,7 +14,7 @@ let parse_case name expected inputs =
   Alcotest.test_case name `Quick @@ parse_one name expected inputs
 
 let t name program expected =
-  Alcotest.test_case name `Slow @@ test_run program name expected
+  Alcotest.test_case program `Slow @@ test_run program name expected
 
 (* For folding *)
 let t_f test_type (name, program, expected) = test_type name program expected
@@ -129,4 +129,7 @@ let parse_suite =
   ]
 
 let letlet = "(let (let 5) let)"
-let () = Alcotest.run "Parsing" [ ("parse", parse_suite); ("compile", suite) ]
+
+let () =
+  Sys.chdir "../../..";
+  Alcotest.run "Parsing" [ ("parse", parse_suite); ("compile", suite) ]

@@ -27,8 +27,8 @@ let arg_to_asm (a : arg) : string =
   | Const n -> sprintf "%d" n
   | Reg r -> r_to_asm r
   | RegOffset (n, r) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      let reg = match r with RAX -> "rax" | RSP -> "rsp" in
+      sprintf "[%s - %d]" reg n
 
 let i_to_asm (i : instruction) : string =
   match i with
@@ -37,11 +37,9 @@ let i_to_asm (i : instruction) : string =
   | IAdd (dest, to_add) ->
       sprintf "  add %s, %s" (arg_to_asm dest) (arg_to_asm to_add)
   | ISub (dest, to_sub) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      sprintf "  sub %s, %s" (arg_to_asm dest) (arg_to_asm to_sub)
   | IMul (dest, to_mul) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      sprintf "  mul %s, %s" (arg_to_asm dest) (arg_to_asm to_mul)
   | ICmp (left, right) ->
       (* TODO *)
       failwith "Not yet implemented"

@@ -43,7 +43,8 @@ let string_of_file file_name =
   really_input inchan buf 0 (in_channel_length inchan);
   Bytes.to_string buf
 
-let run p out =
+let run p outdir outfile =
+  let out = outdir ^ "/" ^ outfile in
   let maybe_asm_string =
     try Right (compile_to_string p)
     with Failure s -> Left ("Compile error: " ^ s)
@@ -109,9 +110,8 @@ let run p out =
 let either_pp ppf e = either_printer e |> print_string
 
 let test_run program_str outfile expected _ =
-  let full_outfile = "output/" ^ outfile in
   let program = parse_string program_str in
-  let result = run program full_outfile in
+  let result = run program "output" outfile in
   Alcotest.(check @@ testable either_pp ( = ))
     program_str
     (Right (expected ^ "\n"))
@@ -124,9 +124,8 @@ let compare_programs check result =
   | _ -> false
 
 let test_err program_str outfile errmsg _ =
-  let full_outfile = "output/" ^ outfile in
   let program = parse_string program_str in
-  let result = run program full_outfile in
+  let result = run program "output" outfile in
   Alcotest.(check @@ testable either_pp compare_programs)
     program_str (Left errmsg) result
 
@@ -140,7 +139,6 @@ let either_parse_printer e =
 let either_parse_pp ppf e = either_parse_printer e |> print_string
 
 let test_parse_err program_str outfile errmsg _ =
-  let full_outfile = "output/" ^ outfile in
   let result = try_parse program_str in
   Alcotest.(check @@ testable either_parse_pp compare_programs)
     program_str (Left errmsg) result
