@@ -27,7 +27,9 @@ and compile_let si env l post_expr =
         else
           let content = compile_expr si (letenv @ env) e in
           let binding = IMov (stackloc si, Reg RAX) in
-          bind (acc @ content @ [ binding ]) (si + 1) env ((var, si) :: letenv) t
+          bind
+            (acc @ content @ [ binding ])
+            (si + 1) env ((var, si) :: letenv) t
   in
   let letenv, bindings, newsi = bind [] si env [] l in
   bindings @ compile_expr newsi (letenv @ env) post_expr
