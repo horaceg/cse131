@@ -4,10 +4,13 @@ compile:
 output/%.run: output/%.o
 	clang -g -fsanitize=address -o $@ bin/main.c $<
 
-output/%.o: output/%.s
-	nasm -f elf64 -o $@ $<
+exec: output/%.cwasm
+	wasmtime run --allow-precompiled $<
 
-output/%.s: input/%.ana compile
+output/%.cwasm: output/%.wasm
+	wasmtime compile -o $@ $<
+
+output/%.wasm: input/%.ana compile
 	mkdir -p output
 	dune exec pa1 -- $< > $@
 
