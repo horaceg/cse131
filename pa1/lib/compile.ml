@@ -63,9 +63,8 @@ and compile_prim2 si env op e1 e2 =
 
 let compile_to_string prog =
   let prelude =
-    "section .text\n" ^ "global our_code_starts_here\n"
-    ^ "our_code_starts_here:"
+    "(module"
   in
   let compiled = compile_expr 1 [] prog in
   let as_assembly_string = to_asm (compiled @ [ IRet ]) in
-  sprintf "%s%s\n" prelude as_assembly_string
+  sprintf "%s%s)\n" prelude as_assembly_string
