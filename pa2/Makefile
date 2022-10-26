@@ -1,13 +1,10 @@
-compile:
-	dune build
-
 output/%.run: output/%.o
-	clang -g -fsanitize=address -o $@ bin/main.c $<
+	clang -g -mstackrealign -o $@ bin/main.c $<
 
 output/%.o: output/%.s
 	nasm -f elf64 -o $@ $<
 
-output/%.s: input/%.ana compile
+output/%.s: input/%.boa compile
 	mkdir -p output
 	dune exec pa2 -- $< > $@
 
