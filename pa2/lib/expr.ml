@@ -1,16 +1,5 @@
-type prim1 =
-  | Add1
-  | Sub1
-  | IsNum
-  | IsBool
-
-type prim2 =
-  | Plus
-  | Minus
-  | Times
-  | Less
-  | Greater
-  | Equal
+type prim1 = Add1 | Sub1 | IsNum | IsBool
+type prim2 = Plus | Minus | Times | Less | Greater | Equal
 
 type expr =
   | ELet of (string * expr) list * expr

@@ -1,0 +1,8 @@
+(test
+ (name test_pa2)
+ (libraries alcotest pa2))
+
+(env
+ (dev
+  (flags
+   (:standard -w -66-33-27-39-26-32))))

@@ -1,0 +1,8 @@
+(library
+ (name pa2)
+ (libraries sexplib extlib alcotest str))
+
+(env
+ (dev
+  (flags
+   (:standard -w -66-33-27-39-26))))
