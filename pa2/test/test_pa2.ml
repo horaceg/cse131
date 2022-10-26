@@ -149,6 +149,13 @@ let suite =
     t "def_x4" def_x4 "3";
     t "def_xy" def_xy "11";
     t "let_nested" let_nested "1225";
+    t "boolTest" boolTest "true";
+    t "if_Test" ifTest "5";
+    t "ifTestLet" ifTestLet "8";
+    t "isBoolTest" isBoolTest "true";
+    t "isBoolTestF" isBoolTestF "false";
+    t "isNumTest" isNumTest "true";
+    t_i "inputTest" "(add1 input)" "6" [ "5" ];
   ]
   @ testFailList
 (* @ MyTests.myTestList *)
@@ -175,4 +182,5 @@ let letlet = "(let (let 5) let)"
 
 let () =
   Sys.chdir "../../..";
-  Alcotest.run "Parsing" [ ("parse", parse_suite); ("compile", suite) ]
+  Alcotest.run "Compiler"
+    [ ("parse", parse_suite); ("compile", suite); ("input", input_tests) ]
