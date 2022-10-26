@@ -4,7 +4,7 @@ output/%.run: output/%.o
 output/%.o: output/%.s
 	nasm -f elf64 -o $@ $<
 
-output/%.s: input/%.boa compile
+output/%.s: input/%.boa
 	mkdir -p output
 	dune exec pa2 -- $< > $@
 
