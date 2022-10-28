@@ -95,6 +95,7 @@ let complexExpression =
   ^ "(add1 (+ x (+ y (* (- t z) x))))))"
 
 let ifTest = "(if true 5 6)"
+let ifTest_expr = EIf (EBool true, ENumber 5, ENumber 6)
 let ifTestLet = "(let ((x 5)) (if (== x 7) 7 8))"
 let boolTest = "true"
 let isBoolTest = "(isBool false)"
@@ -176,6 +177,7 @@ let parse_suite =
     parse_case nested_arith nested_arith_expr nested_arith;
     parse_case let_nested let_nested_expr let_nested;
     parse_case let_empty let_empty_expr let_empty;
+    parse_case ifTest ifTest_expr ifTest;
   ]
 
 let letlet = "(let (let 5) let)"

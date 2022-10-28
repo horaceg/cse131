@@ -136,6 +136,12 @@ let test_err program_str outfile errmsg (args : string list) _ =
       let result = run program full_outfile args in
       Alcotest.check either_testable program_str (Left errmsg) result
 
+let either_parse_printer e =
+  match e with Left s -> "Error: " ^ s ^ "\n" | Right _ -> "AST\n"
+
+let either_parse_pp ppf e = either_parse_printer e |> print_string
+
 let test_parse_err program_str outfile errmsg _ =
   let result = try_parse program_str in
-  Alcotest.check either_testable program_str (Left errmsg) result
+  Alcotest.(check @@ testable either_parse_pp compare_programs)
+    program_str (Left errmsg) result
