@@ -78,8 +78,7 @@ let i_to_asm (i : instruction) : string =
       (* TODO *)
       failwith "Not yet implemented"
   | IShr (dest, to_shift) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      sprintf "  shr %s, %s" (arg_to_asm dest) (arg_to_asm to_shift)
   | ISar (dest, to_shift) ->
       (* TODO *)
       failwith "Not yet implemented"
