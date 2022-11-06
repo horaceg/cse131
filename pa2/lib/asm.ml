@@ -54,10 +54,11 @@ let rec arg_to_asm (a : arg) : string =
   | Const64 n -> sprintf "%Ld" n
   | HexConst n -> sprintf "%#Lx" n
   | Reg r -> r_to_asm r
-  | RegOffset (n, r) ->
-      (* TODO *)
-      failwith "Not yet implemented"
   | Sized (s, a) -> s_to_asm s ^ " " ^ arg_to_asm a
+  | RegOffset (n, r) when n < 0 ->
+      let reg = r_to_asm r in
+      sprintf "[%s - %d]" reg (-n)
+  | RegOffset (_, _) -> failwith "negative offsets only"
 
 let i_to_asm (i : instruction) : string =
   match i with
@@ -80,11 +81,9 @@ let i_to_asm (i : instruction) : string =
   | IShr (dest, to_shift) ->
       sprintf "  shr %s, %s" (arg_to_asm dest) (arg_to_asm to_shift)
   | ISar (dest, to_shift) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      sprintf "  sar %s, %s" (arg_to_asm dest) (arg_to_asm to_shift)
   | IShl (dest, to_shift) ->
-      (* TODO *)
-      failwith "Not yet implemented"
+      sprintf "  shl %s, %s" (arg_to_asm dest) (arg_to_asm to_shift)
   | ICmp (left, right) ->
       sprintf "  cmp %s, %s" (arg_to_asm left) (arg_to_asm right)
   | IPush arg ->

@@ -30,7 +30,7 @@ let arg_to_asm (a : arg) : string =
   | RegOffset (n, r) when n < 0 ->
       let reg = r_to_asm r in
       sprintf "[%s - %d]" reg (-n)
-  | RegOffset (_, _) -> failwith "negative offsets onlu"
+  | RegOffset (_, _) -> failwith "negative offsets only"
 
 let i_to_asm (i : instruction) : string =
   match i with
