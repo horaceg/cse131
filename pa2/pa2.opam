@@ -10,8 +10,6 @@ depends: [
   "ocamlformat-rpc"
   "sexplib"
   "extlib"
-  "unix"
-  "str"
   "odoc" {with-doc}
 ]
 build: [
